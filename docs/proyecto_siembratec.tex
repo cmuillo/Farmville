@@ -1,0 +1,258 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{setspace}
+\geometry{margin=2.5cm}
+\setstretch{1.15}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    {\Large Instituto Tecnologico de Costa Rica\par}
+    \vspace{1.5cm}
+    {\LARGE \textbf{Proyecto 3: SiembraTEC}\par}
+    \vspace{0.4cm}
+    {\large Videojuego de granja en Python y Tkinter\par}
+    \vspace{2.0cm}
+
+    \begin{flushleft}
+        \textbf{Curso:} Programacion Orientada a Objetos\\
+        \textbf{Tipo de proyecto:} Individual\\
+        \textbf{Autora:} Joselyn Hidalgo Torres\\
+        \textbf{Documento:} Documentacion tecnica y manual de usuario
+    \end{flushleft}
+
+    \vfill
+    {\large \today\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Descripcion del sistema}
+El sistema desarrollado corresponde a una simulacion de granja inspirada en FarmVille, construida con Python y Tkinter bajo un enfoque de Programacion Orientada a Objetos (POO). El objetivo del juego es administrar recursos, producir monedas, comprar y colocar elementos productivos, ampliar terrenos y conservar el progreso entre ejecuciones.
+
+La partida inicia con 100 monedas y un terreno base de 10x10 celdas (segun la aclaracion oficial del proyecto). Cada celda admite un elemento o permanece vacia. El jugador puede adquirir plantaciones, animales, arboles, decorativos y consumibles de cura. La produccion genera ganancias por tiempo y alimenta las estadisticas de la partida.
+
+El sistema integra:
+\begin{itemize}
+    \item Persistencia completa mediante archivo JSON.
+    \item Inventario para almacenar elementos comprados o retirados del terreno.
+    \item Bitacora para registrar eventos de juego.
+    \item Temporizadores con hilos por parcela productiva.
+    \item Auto-recoleccion opcional con penalizacion por no recolectar en modo manual.
+    \item Sistema aleatorio de plagas y enfermedades con uso de pesticida/medicina.
+\end{itemize}
+
+\section{Funcionalidades implementadas}
+\subsection{Menu principal}
+\begin{itemize}
+    \item Iniciar partida nueva.
+    \item Confirmacion fuerte para borrar progreso previo al iniciar nueva partida.
+    \item Continuar partida guardada.
+    \item Ver estadisticas globales.
+    \item Salida segura de la aplicacion.
+\end{itemize}
+
+\subsection{Terrenos y representacion matricial}
+\begin{itemize}
+    \item Cada terreno utiliza una matriz de 10x10 (lista de listas).
+    \item Validacion de posiciones para evitar filas/columnas invalidas.
+    \item Celda libre requerida para colocar nuevos elementos.
+    \item Compra de terrenos adicionales por 20.000 monedas.
+    \item Navegacion por terreno anterior, siguiente o salto directo por numero.
+\end{itemize}
+
+\subsection{Tienda}
+\begin{itemize}
+    \item Catalogo completo de productos solicitados por el enunciado.
+    \item Visualizacion de precio, tiempo de produccion y ganancia.
+    \item Compra de consumibles (pesticida y medicina).
+    \item Control de monedas insuficientes.
+    \item Integracion con inventario para la posterior colocacion.
+\end{itemize}
+
+\subsection{Colocacion, retiro y reutilizacion}
+\begin{itemize}
+    \item Colocacion manual en celda seleccionada por el usuario.
+    \item Retiro de elementos del tablero hacia inventario.
+    \item Recolocacion desde inventario en otra celda valida.
+    \item Nombrado de animales al momento de colocar.
+\end{itemize}
+
+\subsection{Produccion y recoleccion}
+\begin{itemize}
+    \item Temporizador por elemento productivo.
+    \item Opcion de recoleccion manual o automatica activable/desactivable.
+    \item Conteo de tiempo restante visible en celdas.
+    \item Suma automatica de ganancias al recolectar.
+\end{itemize}
+
+\subsection{Reglas de negocio del ciclo productivo}
+\begin{itemize}
+    \item Plantaciones: ciclo one-shot (comprar, sembrar, cosechar, volver a comprar).
+    \item Animales y arboles: se mantienen en el terreno y reinician produccion tras recolectar.
+    \item Recoleccion manual tardia: la produccion puede perderse por dano al exceder el limite de espera.
+\end{itemize}
+
+\subsection{Plagas y enfermedades}
+\begin{itemize}
+    \item Eventos aleatorios durante el ciclo de produccion.
+    \item Plantas/arboles requieren pesticida.
+    \item Animales requieren medicina.
+    \item Si no se cura a tiempo, el elemento muere y deja de producir.
+\end{itemize}
+
+\subsection{Panel de informacion, bitacora y estadisticas}
+\begin{itemize}
+    \item Panel superior con jugador, monedas, terreno actual, elementos, listos y tiempo jugado.
+    \item Bitacora de eventos importantes (compra, cosecha, curacion, muerte, guardado, etc.).
+    \item Estadisticas acumuladas por tipo de producto y ganancias totales.
+\end{itemize}
+
+\section{Estructuras de datos utilizadas}
+\subsection{Matrices}
+Cada terreno se modela con una matriz 10x10 donde cada posicion contiene \texttt{None} (celda vacia) o un identificador de elemento colocado.
+
+\subsection{Diccionarios principales}
+\begin{itemize}
+    \item \textbf{Catalogo de productos}: definiciones de precio, tiempo y ganancia.
+    \item \textbf{Items colocados}: acceso por id unico para consultar estado en tiempo real.
+    \item \textbf{Inventario}: cantidad por clave de producto o consumible.
+    \item \textbf{Estadisticas}: compras y ganancias por tipo.
+\end{itemize}
+
+\subsection{Listas}
+\begin{itemize}
+    \item Lista de terrenos de la partida.
+    \item Lista de entradas de bitacora.
+\end{itemize}
+
+\subsection{Objetos y dataclasses}
+Se utilizan clases y dataclasses para estado estructurado: \texttt{GameState}, \texttt{Terrain}, \texttt{PlacedItem}, \texttt{Statistics}, entre otras.
+
+\section{Documentacion interna y externa}
+\subsection{Documentacion interna (codigo fuente)}
+\begin{itemize}
+    \item Comentarios explicativos en bloques clave de logica (temporizadores, hilos, validaciones, persistencia).
+    \item Nombres de clases y metodos orientados a comprension del flujo.
+    \item Separacion por secciones: modelo, persistencia, motor de juego e interfaz.
+\end{itemize}
+
+\subsection{Documentacion externa (este documento)}
+\begin{itemize}
+    \item Descripcion general de arquitectura y funcionamiento.
+    \item Manual de uso paso a paso.
+    \item Explicacion del manejo de archivos y estructura de datos.
+    \item Criterios de mantenimiento y mejoras futuras.
+\end{itemize}
+
+\section{Manual de usuario}
+\subsection{Requisitos para ejecutar}
+\begin{enumerate}
+    \item Tener Python 3 instalado.
+    \item Instalar dependencias de \texttt{requirements.txt}.
+    \item Ejecutar desde la raiz del proyecto con \texttt{python main.py}.
+\end{enumerate}
+
+\subsection{Flujo basico de uso}
+\begin{enumerate}
+    \item En el menu principal, elegir \textit{Iniciar Partida} o \textit{Continuar Partida}.
+    \item Abrir \textit{Tienda} y comprar un producto.
+    \item Colocar el producto en una celda vacia.
+    \item Esperar el tiempo de produccion indicado.
+    \item Recolectar manualmente o activar \textit{Auto recoleccion}.
+\end{enumerate}
+
+\subsection{Uso del inventario}
+\begin{enumerate}
+    \item Comprar en tienda (el item se agrega al inventario).
+    \item Abrir la ventana \textit{Inventario}.
+    \item Elegir el item y presionar \textit{Colocar item seleccionado}.
+    \item Hacer clic en una celda libre para ubicarlo.
+\end{enumerate}
+
+\subsection{Curacion de plagas/enfermedades}
+\begin{enumerate}
+    \item Comprar pesticida o medicina en tienda.
+    \item Seleccionar la celda afectada.
+    \item Presionar \textit{Curar} antes de que termine el contador de la afeccion.
+\end{enumerate}
+
+\subsection{Compra y navegacion entre terrenos}
+\begin{enumerate}
+    \item Presionar \textit{Comprar terreno (20000)} cuando haya fondos.
+    \item Navegar con \textit{Terreno -}, \textit{Terreno +} o \textit{Ir a terreno}.
+\end{enumerate}
+
+\subsection{Guardado y salida}
+\begin{itemize}
+    \item El juego guarda automaticamente cada 30 segundos.
+    \item Tambien puede guardarse manualmente con el boton \textit{Guardar}.
+    \item Al cerrar ventana de juego, se guarda estado y se detienen hilos.
+\end{itemize}
+
+\section{Manejo de archivos}
+\subsection{Archivo principal de persistencia}
+El archivo \texttt{data/savegame.json} conserva el estado completo de la partida:
+\begin{itemize}
+    \item Jugador y monedas.
+    \item Terrenos y ocupacion de celdas.
+    \item Items colocados, tiempos de produccion y estados especiales.
+    \item Inventario, bitacora y estadisticas.
+    \item Configuracion de auto-recoleccion.
+\end{itemize}
+
+\subsection{Politica de tiempo y guardado}
+\begin{itemize}
+    \item El tiempo de produccion avanza solo mientras la app esta abierta.
+    \item No se aplica progreso offline al reabrir el juego.
+    \item Si se inicia partida nueva y se confirma, se elimina el archivo anterior.
+\end{itemize}
+
+\subsection{Recursos graficos}
+\begin{itemize}
+    \item Imagenes de productos y logo en \texttt{assets/images}.
+    \item Fondo de menu configurable con \texttt{menu.jpg} (o alternos definidos en codigo).
+\end{itemize}
+
+\section{Cumplimiento de requisitos del enunciado}
+\begin{longtable}{|p{0.36\textwidth}|p{0.56\textwidth}|}
+\hline
+\textbf{Requisito} & \textbf{Implementacion en el sistema} \\
+\hline
+POO (herencia y polimorfismo) & Jerarquia \texttt{FarmEntity} y subclases; fabrica polimorfica para logica de cura. \\
+\hline
+Interfaz Tkinter funcional & Menu, juego principal, tienda, inventario y estadisticas con interaccion completa. \\
+\hline
+Matrices para terrenos & Cada terreno se modela como matriz 10x10. \\
+\hline
+Manejo de archivos & Guardado y carga en JSON con estado integral de partida. \\
+\hline
+Hilos y temporizadores & Un hilo por item productivo para actualizar ciclos por segundo. \\
+\hline
+Inventario y retiro del tablero & Boton de retiro al inventario y recolocacion posterior desde ventana de inventario. \\
+\hline
+Plagas/enfermedades + cura & Eventos aleatorios con consumibles de cura y muerte por no atender a tiempo. \\
+\hline
+Navegacion entre terrenos & Botones de anterior/siguiente e ir directo por numero. \\
+\hline
+Estadisticas y bitacora & Acumulados de compras/ganancias y registro cronologico de eventos. \\
+\hline
+\end{longtable}
+
+\section{Conclusiones}
+El proyecto cumple de forma integral con los componentes solicitados: interfaz grafica completa, uso de matrices, persistencia JSON, POO con herencia/polimorfismo, hilos por produccion y flujo de juego funcional con economia, inventario, estadisticas, plagas/enfermedades y expansion de terrenos.
+
+Desde la perspectiva de mantenimiento, la separacion por capas (modelo, motor, persistencia e interfaz) facilita extensiones futuras. Entre mejoras recomendadas se incluyen: niveles de dificultad, mas eventos aleatorios, mejores efectos visuales y exportacion de reportes de estadisticas.
+
+\vspace{0.5cm}
+\noindent\textbf{Autora:} Joselyn Hidalgo Torres
+
+\end{document}

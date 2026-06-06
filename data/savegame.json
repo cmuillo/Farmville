@@ -1,0 +1,164 @@
+{
+  "player_name": "Chris",
+  "coins": 140,
+  "terrains": [
+    {
+      "index": 0,
+      "grid": [
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      ]
+    }
+  ],
+  "current_terrain_index": 0,
+  "items": {},
+  "inventory": {
+    "pesticida": 0,
+    "medicina": 0,
+    "trigo": 0,
+    "maiz": 0
+  },
+  "auto_harvest": false,
+  "statistics": {
+    "total_generated": 95,
+    "total_products_bought": 2,
+    "products_bought_by_type": {
+      "trigo": 1,
+      "maiz": 1
+    },
+    "products_gain_by_type": {
+      "trigo": 35,
+      "maiz": 60
+    },
+    "total_play_seconds": 171
+  },
+  "log_entries": [
+    "Partida nueva creada.",
+    "[11:14:23] Compraste Trigo. Se agrego al inventario.",
+    "[11:14:30] Compraste Maiz. Se agrego al inventario.",
+    "[11:14:46] Colocado: Maiz en terreno 1, fila 1, columna 1.",
+    "[11:15:00] Colocado: Trigo en terreno 1, fila 1, columna 2.",
+    "[11:15:30] Trigo esta listo para recolectar.",
+    "[11:15:39] Cosecha manual de Trigo: +35 monedas.",
+    "[11:15:46] Maiz esta listo para recolectar.",
+    "[11:16:32] Cosecha manual de Maiz: +60 monedas."
+  ]
+}

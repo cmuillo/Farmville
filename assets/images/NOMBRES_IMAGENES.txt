@@ -1,0 +1,34 @@
+Coloca tus imagenes en esta carpeta con estos nombres exactos:
+
+logo.png
+muerto.png
+
+trigo.png
+maiz.png
+zanahoria.png
+tomate.png
+papa.png
+
+gallina.png
+pato.png
+oveja.png
+cerdo.png
+vaca.png
+
+manzano.png
+naranjo.png
+limonero.png
+cacaotero.png
+cafetal.png
+
+cerca.png
+banco.png
+fuente.png
+estatua.png
+molino_decorativo.png
+
+pesticida.png
+medicina.png
+
+Opcional para video de menu:
+assets/video/menu.mp4
