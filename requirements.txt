@@ -1,2 +1,1 @@
 Pillow>=10.0.0
-tkVideoPlayer>=2.5

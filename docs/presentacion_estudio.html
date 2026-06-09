@@ -1,0 +1,689 @@
+﻿<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SiembraTEC - Presentacion de Estudio</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #1a1e2e; --slide-bg: #22283a; --accent: #4caf77; --accent2: #e8a838;
+      --accent3: #5baeff; --accent4: #d95f7a; --text: #e8eaf0; --muted: #8a90a8;
+      --code-bg: #13161f; --code-border: #2e3650;
+      --pill-green: #1a4d2e; --pill-blue: #1a2d4d; --pill-amber: #4d3a1a; --pill-red: #4d1a25;
+    }
+    html, body { height: 100%; font-family: "Segoe UI", system-ui, sans-serif; background: var(--bg); color: var(--text); }
+    .ppt-shell { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; background: #12151f;
+      padding: 10px 20px; border-bottom: 2px solid #2e3650; flex-shrink: 0; gap: 12px; }
+    .topbar h1 { font-size: 1.05rem; color: var(--accent); letter-spacing: .5px; white-space: nowrap; }
+    .topbar .subtitle { font-size: .8rem; color: var(--muted); white-space: nowrap; }
+    .nav-controls { display: flex; align-items: center; gap: 10px; }
+    .nav-btn { background: #2e3650; border: 1px solid #3e4870; color: var(--text); padding: 6px 18px;
+      border-radius: 6px; cursor: pointer; font-size: .9rem; transition: background .15s; }
+    .nav-btn:hover { background: #3e4870; } .nav-btn:disabled { opacity: .35; cursor: default; }
+    #slide-counter { font-size: .85rem; color: var(--muted); min-width: 70px; text-align: center; }
+    .idx-btn { background: var(--pill-blue); border: 1px solid var(--accent3); color: var(--accent3);
+      padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: .85rem; }
+    .idx-btn:hover { background: #1e3560; }
+    .progress-bar { height: 3px; background: #2e3650; flex-shrink: 0; }
+    .progress-fill { height: 100%; background: var(--accent); transition: width .3s; }
+    .ppt-body { display: flex; flex: 1; overflow: hidden; }
+    .sidebar { width: 260px; background: #12151f; border-right: 1px solid #2e3650; overflow-y: auto;
+      flex-shrink: 0; transition: width .25s, opacity .25s; }
+    .sidebar.hidden { width: 0; opacity: 0; pointer-events: none; overflow: hidden; }
+    .sidebar-title { font-size: .75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); padding: 14px 14px 6px; }
+    .idx-item { display: flex; align-items: center; gap: 10px; padding: 9px 14px; cursor: pointer;
+      border-left: 3px solid transparent; font-size: .85rem; transition: background .15s; }
+    .idx-item:hover { background: #1e2336; }
+    .idx-item.active { border-left-color: var(--accent); background: #1a2230; color: var(--accent); }
+    .idx-num { font-size: .7rem; color: var(--muted); min-width: 22px; }
+    .slide-viewport { flex: 1; overflow: hidden; position: relative; }
+    .slides-container { display: flex; height: 100%; transition: transform .35s cubic-bezier(.4,0,.2,1); }
+    .slide { min-width: 100%; height: 100%; overflow-y: auto; padding: 36px 44px 30px; background: var(--slide-bg); }
+    .slide-tag { display: inline-block; font-size: .7rem; text-transform: uppercase; letter-spacing: 1.2px;
+      padding: 3px 10px; border-radius: 999px; font-weight: 700; margin-bottom: 10px; }
+    .tag-green { background: var(--pill-green); color: var(--accent); border: 1px solid var(--accent); }
+    .tag-blue  { background: var(--pill-blue);  color: var(--accent3); border: 1px solid var(--accent3); }
+    .tag-amber { background: var(--pill-amber); color: var(--accent2); border: 1px solid var(--accent2); }
+    .tag-red   { background: var(--pill-red);   color: var(--accent4); border: 1px solid var(--accent4); }
+    .slide-title { font-size: 2rem; font-weight: 700; line-height: 1.2; margin-bottom: 6px; }
+    .slide-subtitle { color: var(--muted); font-size: 1rem; margin-bottom: 24px; }
+    .cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .cols-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .cols-2-3 { display: grid; grid-template-columns: 2fr 3fr; gap: 20px; }
+    .card { background: #1a1e2e; border: 1px solid #2e3650; border-radius: 12px; padding: 18px 20px; }
+    .card-title { font-size: .95rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .card-title .icon { font-size: 1.2rem; }
+    .card p, .card li { font-size: .88rem; color: #c0c8d8; line-height: 1.6; }
+    .card ul { padding-left: 18px; } .card li { margin-bottom: 4px; }
+    pre { background: var(--code-bg); border: 1px solid var(--code-border); border-radius: 8px;
+      padding: 14px 16px; overflow-x: auto; font-family: Consolas,"Courier New",monospace;
+      font-size: .8rem; line-height: 1.6; color: #c9d1e0; }
+    .kw  { color: #c792ea; } .cls { color: #82aaff; } .fn { color: #82cfff; }
+    .str { color: #c3e88d; } .num { color: #f78c6c; } .cmt { color: #546e7a; font-style: italic; }
+    .dec { color: #ffcb6b; }
+    .flow { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; }
+    .flow-step { background: #1a1e2e; border: 1px solid #2e3650; border-radius: 10px; padding: 12px 14px;
+      flex: 1; min-width: 110px; font-size: .82rem; line-height: 1.5; position: relative; }
+    .flow-step strong { display: block; color: var(--accent); font-size: .9rem; margin-bottom: 4px; }
+    .flow-arrow { display: flex; align-items: center; padding: 0 6px; color: var(--muted); font-size: 1.3rem; }
+    .states { display: grid; grid-template-columns: repeat(auto-fit,minmax(150px,1fr)); gap: 12px; }
+    .state-box { border-radius: 10px; padding: 12px 14px; font-size: .82rem; line-height: 1.5; border: 1px solid; }
+    .state-box strong { display: block; font-size: .9rem; margin-bottom: 4px; }
+    .s-prod  { background: #1a2d4d; border-color: var(--accent3); } .s-prod strong  { color: var(--accent3); }
+    .s-ready { background: #1a4d2e; border-color: var(--accent);  } .s-ready strong { color: var(--accent); }
+    .s-sick  { background: #4d3a1a; border-color: var(--accent2); } .s-sick strong  { color: var(--accent2); }
+    .s-dead  { background: #4d1a25; border-color: var(--accent4); } .s-dead strong  { color: var(--accent4); }
+    .tree { padding-left: 0; list-style: none; font-size: .88rem; }
+    .tree li { margin: 6px 0; }
+    .tree-root { color: var(--accent2); font-weight: 700; font-size: 1rem; }
+    .tree-child { padding-left: 28px; position: relative; color: #c0c8d8; }
+    .tree-child::before { content: "├─ "; color: var(--muted); font-family: monospace; }
+    .tree-child:last-child::before { content: "└─ "; }
+    .pill { display: inline-block; font-size: .7rem; padding: 1px 7px; border-radius: 999px; margin-left: 6px; vertical-align: middle; }
+    .pill-g { background: var(--pill-green); color: var(--accent);  border: 1px solid var(--accent); }
+    .pill-b { background: var(--pill-blue);  color: var(--accent3); border: 1px solid var(--accent3); }
+    .pill-a { background: var(--pill-amber); color: var(--accent2); border: 1px solid var(--accent2); }
+    .highlight { border-left: 4px solid var(--accent2); background: #241e10; padding: 12px 16px;
+      border-radius: 0 8px 8px 0; font-size: .88rem; line-height: 1.6; color: #ddd; margin-top: 12px; }
+    .highlight strong { color: var(--accent2); }
+    .warn-box { border-left: 4px solid var(--accent4); background: #2a1018; padding: 12px 16px;
+      border-radius: 0 8px 8px 0; font-size: .88rem; line-height: 1.6; color: #ddd; margin-top: 12px; }
+    .warn-box strong { color: var(--accent4); }
+    hr { border: none; border-top: 1px solid #2e3650; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: .83rem; }
+    th { text-align: left; padding: 8px 10px; background: #13161f; color: var(--muted); border-bottom: 1px solid #2e3650; }
+    td { padding: 8px 10px; border-bottom: 1px solid #1e2336; color: #c0c8d8; vertical-align: top; }
+    td:first-child { color: var(--accent3); font-family: Consolas,monospace; white-space: nowrap; }
+    tr:hover td { background: #1a1e2e; }
+    .title-slide { display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; min-height: 80%; gap: 20px; }
+    .big-icon { font-size: 5rem; line-height: 1; }
+    .hero-title { font-size: 3rem; font-weight: 800; color: var(--accent); line-height: 1.1; }
+    .hero-sub { font-size: 1.15rem; color: var(--muted); max-width: 600px; }
+    .badge-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+    .badge-pill { padding: 6px 16px; border-radius: 999px; font-size: .85rem; font-weight: 600; }
+    @media (max-width:760px) {
+      .cols-2,.cols-3,.cols-2-3 { grid-template-columns: 1fr; }
+      .slide { padding: 20px 18px; } .sidebar { display: none; } .hero-title { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="ppt-shell">
+  <div class="topbar">
+    <div>
+      <h1>&#127807; SiembraTEC</h1>
+      <div class="subtitle">Presentacion de Estudio &middot; POO + Hilos + Persistencia</div>
+    </div>
+    <div class="nav-controls">
+      <button class="idx-btn" onclick="toggleSidebar()">&#9776; Indice</button>
+      <button class="nav-btn" id="btn-prev" onclick="goSlide(-1)" disabled>&#9664; Anterior</button>
+      <span id="slide-counter">1 / 11</span>
+      <button class="nav-btn" id="btn-next" onclick="goSlide(1)">Siguiente &#9654;</button>
+    </div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+  <div class="ppt-body">
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-title">Diapositivas</div>
+      <div id="idx-list"></div>
+    </nav>
+    <div class="slide-viewport">
+      <div class="slides-container" id="slides">
+
+        <!-- SLIDE 1: PORTADA -->
+        <div class="slide">
+          <div class="title-slide">
+            <div class="big-icon">&#127806;</div>
+            <div class="hero-title">SiembraTEC</div>
+            <div class="hero-sub">Guia completa de clases, funciones y patrones de diseno.<br>Preparacion de examen &mdash; Programacion Orientada a Objetos.</div>
+            <div class="badge-row">
+              <span class="badge-pill tag-green">Python 3</span>
+              <span class="badge-pill tag-blue">Tkinter GUI</span>
+              <span class="badge-pill tag-amber">Threading</span>
+              <span class="badge-pill tag-red">JSON Persistencia</span>
+            </div>
+            <div style="color:var(--muted);font-size:.85rem;margin-top:10px;">Hecho por Joselyn Melissa Hidalgo Torres &bull; Usa las flechas &#9664; &#9654; para navegar</div>
+          </div>
+        </div>
+
+        <!-- SLIDE 2: LIBRERIAS -->
+        <div class="slide">
+          <span class="slide-tag tag-blue">Fundamentos</span>
+          <div class="slide-title">Librerias Importadas</div>
+          <div class="slide-subtitle">Que hace cada import y por que existe en el proyecto</div>
+          <div class="cols-2">
+            <div class="card">
+              <div class="card-title"><span class="icon">&#128230;</span> Libreria estandar</div>
+              <table>
+                <tr><th>Import</th><th>Uso en el proyecto</th></tr>
+                <tr><td>json</td><td>Serializar el estado del juego a archivo .json</td></tr>
+                <tr><td>random</td><td>Simular plagas con probabilidad 0.3% por segundo</td></tr>
+                <tr><td>threading</td><td>Correr un hilo por cada item productivo en paralelo</td></tr>
+                <tr><td>time</td><td>sleep(1) para el tick, strftime para timestamps</td></tr>
+                <tr><td>uuid</td><td>Generar IDs unicos para cada item colocado</td></tr>
+                <tr><td>dataclasses</td><td>@dataclass genera __init__ automatico en modelos</td></tr>
+                <tr><td>pathlib</td><td>Rutas multiplataforma para archivos e imagenes</td></tr>
+                <tr><td>typing</td><td>Anotaciones de tipo para mayor claridad del codigo</td></tr>
+              </table>
+            </div>
+            <div class="card">
+              <div class="card-title"><span class="icon">&#128444;&#65039;</span> Librerias GUI / externas</div>
+              <table>
+                <tr><th>Import</th><th>Uso en el proyecto</th></tr>
+                <tr><td>tkinter (tk)</td><td>Motor principal de la interfaz grafica (ventanas, botones, grilla)</td></tr>
+                <tr><td>ttk</td><td>Widgets modernos: Treeview (tabla de tienda), Style (tema clam)</td></tr>
+                <tr><td>messagebox</td><td>Dialogos de informacion, advertencia, confirmacion y error</td></tr>
+                <tr><td>simpledialog</td><td>Pedir texto (nombre jugador, animal) o numero (ir a terreno)</td></tr>
+                <tr><td>PIL / Pillow</td><td>Abrir y redimensionar imagenes PNG; opcional (fallback sin imagenes)</td></tr>
+              </table>
+              <div class="highlight" style="margin-top:12px;">
+                <strong>Truco del try/except en Pillow:</strong> Si la libreria no esta instalada,
+                <code>Image</code> e <code>ImageTk</code> se asignan a <code>None</code>
+                y el juego continua funcionando con texto en las celdas.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 3: ARQUITECTURA -->
+        <div class="slide">
+          <span class="slide-tag tag-green">Arquitectura</span>
+          <div class="slide-title">Mapa General del Sistema</div>
+          <div class="slide-subtitle">Como se relacionan las piezas del juego</div>
+          <div class="cols-2-3" style="gap:24px;align-items:start;">
+            <div>
+              <div class="card" style="margin-bottom:16px;">
+                <div class="card-title"><span class="icon">&#128193;</span> Capas del sistema</div>
+                <ul class="card" style="background:transparent;border:none;padding:0;">
+                  <li><strong style="color:var(--accent2)">Modelos</strong> &mdash; datos puros, sin logica</li>
+                  <li><strong style="color:var(--accent3)">Motor (GameEngine)</strong> &mdash; reglas del juego</li>
+                  <li><strong style="color:var(--accent4)">Hilos (ProductionThread)</strong> &mdash; tiempo real</li>
+                  <li><strong style="color:var(--accent)">Persistencia</strong> &mdash; guardar/cargar JSON</li>
+                  <li><strong style="color:#c0c8d8">UI (Tkinter)</strong> &mdash; solo muestra; delega al motor</li>
+                </ul>
+              </div>
+              <div class="highlight">
+                <strong>Regla de oro:</strong> La UI nunca modifica el estado directamente. Solo llama metodos de <code>GameEngine</code>.
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title"><span class="icon">&#128279;</span> Diagrama de relaciones</div>
+              <pre style="font-size:.78rem;"><span class="cls">FarmApp</span>  (controlador raiz)
+  &#9500;&#9472; <span class="cls">MenuView</span>   &#8594; abre el menu principal
+  &#9492;&#9472; <span class="cls">GameView</span>   &#8594; pantalla de juego
+        &#9474;
+        &#9500;&#9472; crea  <span class="cls">GameEngine</span>(state)
+        &#9474;         &#9500;&#9472; state: <span class="cls">GameState</span>  &#8592; modelos
+        &#9474;         &#9500;&#9472; lock:  RLock      &#8592; seguridad hilos
+        &#9474;         &#9492;&#9472; threads: { id &#8594; <span class="cls">ProductionThread</span> }
+        &#9474;
+        &#9500;&#9472; abre  <span class="cls">ShopWindow</span>
+        &#9500;&#9472; abre  <span class="cls">InventoryWindow</span>
+        &#9492;&#9472; abre  <span class="cls">StatsWindow</span>
+
+<span class="cls">GameState</span>
+  &#9500;&#9472; terrains: [ <span class="cls">Terrain</span> ]
+  &#9500;&#9472; items:    { id &#8594; <span class="cls">PlacedItem</span> }
+  &#9500;&#9472; inventory: { key &#8594; cantidad }
+  &#9492;&#9472; statistics: <span class="cls">Statistics</span></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 4: HERENCIA -->
+        <div class="slide">
+          <span class="slide-tag tag-amber">&#9733; Tema de Examen</span>
+          <div class="slide-title">Herencia + Polimorfismo + Factory</div>
+          <div class="slide-subtitle">Los tres patrones mas importantes del proyecto</div>
+          <div class="cols-2" style="align-items:start;">
+            <div>
+              <div class="card" style="margin-bottom:14px;">
+                <div class="card-title"><span class="icon">&#127795;</span> Arbol de herencia</div>
+                <ul class="tree">
+                  <li class="tree-root">FarmEntity <span class="pill pill-b">clase base</span></li>
+                  <li class="tree-child">PlantEntity <span class="pill pill-g">pesticida</span></li>
+                  <li class="tree-child">TreeEntity <span class="pill pill-g">pesticida</span></li>
+                  <li class="tree-child">AnimalEntity <span class="pill pill-a">medicina</span></li>
+                  <li class="tree-child">DecorativeEntity <span class="pill" style="background:#222;border:1px solid #444;color:#888;">sin cura</span></li>
+                </ul>
+              </div>
+              <div class="card">
+                <div class="card-title"><span class="icon">&#127981;</span> Factory Method</div>
+                <p>La funcion <strong style="color:var(--accent3)">create_entity(definition)</strong> actua como fabrica: elige la subclase correcta segun la categoria, sin que el motor necesite saber que clase usa.</p>
+              </div>
+            </div>
+            <div>
+              <pre><span class="cmt"># Clase base define la interfaz</span>
+<span class="kw">class</span> <span class="cls">FarmEntity</span>:
+    <span class="kw">def</span> <span class="fn">required_cure</span>(<span class="kw">self</span>) -&gt; Optional[str]:
+        <span class="kw">return</span> <span class="kw">None</span>  <span class="cmt"># default: sin cura</span>
+
+<span class="cmt"># Subclases sobreescriben el metodo (polimorfismo)</span>
+<span class="kw">class</span> <span class="cls">PlantEntity</span>(<span class="cls">FarmEntity</span>):
+    <span class="kw">def</span> <span class="fn">required_cure</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="str">"pesticida"</span>
+
+<span class="kw">class</span> <span class="cls">AnimalEntity</span>(<span class="cls">FarmEntity</span>):
+    <span class="kw">def</span> <span class="fn">required_cure</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="str">"medicina"</span>
+
+<span class="kw">class</span> <span class="cls">DecorativeEntity</span>(<span class="cls">FarmEntity</span>):
+    <span class="kw">pass</span>  <span class="cmt"># hereda None = sin cura</span>
+
+<span class="cmt"># Factory: una sola funcion decide la clase</span>
+<span class="kw">def</span> <span class="fn">create_entity</span>(definition):
+    <span class="kw">if</span> definition.category == <span class="str">"plantacion"</span>: <span class="kw">return</span> <span class="cls">PlantEntity</span>(definition)
+    <span class="kw">if</span> definition.category == <span class="str">"animal"</span>:     <span class="kw">return</span> <span class="cls">AnimalEntity</span>(definition)
+    <span class="kw">if</span> definition.category == <span class="str">"arbol"</span>:      <span class="kw">return</span> <span class="cls">TreeEntity</span>(definition)
+    <span class="kw">return</span> <span class="cls">DecorativeEntity</span>(definition)
+
+<span class="cmt"># Uso polimorfico: motor no sabe que clase tiene</span>
+entity = <span class="fn">create_entity</span>(definition)  <span class="cmt"># Factory</span>
+cure   = entity.<span class="fn">required_cure</span>()      <span class="cmt"># Polimorfismo</span></pre>
+              <div class="highlight">
+                <strong>Pregunta de examen:</strong> "Donde esta el polimorfismo?" &rarr;
+                en <code>required_cure()</code>: la misma llamada produce resultados distintos
+                segun la subclase concreta, sin un if/else en el motor.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 5: MODELOS -->
+        <div class="slide">
+          <span class="slide-tag tag-blue">Modelos de datos</span>
+          <div class="slide-title">Dataclasses &mdash; Modelos del Juego</div>
+          <div class="slide-subtitle">Como se estructuran y serializan los datos</div>
+          <div class="cols-3" style="align-items:start;">
+            <div class="card">
+              <div class="card-title"><span class="icon">&#128203;</span> ProductDefinition</div>
+              <p>Tipo de producto (estatico). Define precio, tiempo, ganancia, categoria.</p>
+              <hr>
+              <ul>
+                <li><code>key</code> &mdash; ID interno</li>
+                <li><code>production_time</code> &mdash; segundos hasta cosechar</li>
+                <li><code>gain</code> &mdash; monedas al cosechar</li>
+                <li><code>one_shot</code> &mdash; True = desaparece tras cosecha</li>
+                <li><code>is_productive</code> &mdash; @property: time&gt;0 AND gain&gt;0</li>
+              </ul>
+            </div>
+            <div class="card">
+              <div class="card-title"><span class="icon">&#128205;</span> PlacedItem</div>
+              <p>Instancia en una celda. Estado cambiante en tiempo real.</p>
+              <hr>
+              <ul>
+                <li><code>item_id</code> &mdash; UUID unico</li>
+                <li><code>remaining_seconds</code> &mdash; temporizador</li>
+                <li><code>ready</code> &mdash; True cuando termino</li>
+                <li><code>condition</code> &mdash; "plaga"/"enfermedad"/None</li>
+                <li><code>dead</code> &mdash; True si murio sin cura</li>
+                <li><code>to_dict()</code> / <code>from_dict()</code></li>
+              </ul>
+            </div>
+            <div class="card">
+              <div class="card-title"><span class="icon">&#128506;</span> GameState</div>
+              <p>Estado raiz que contiene todo. Se guarda/carga completo.</p>
+              <hr>
+              <ul>
+                <li><code>coins</code> &mdash; monedas actuales</li>
+                <li><code>terrains</code> &mdash; lista de Terrain</li>
+                <li><code>items</code> &mdash; dict id&rarr;PlacedItem</li>
+                <li><code>inventory</code> &mdash; dict key&rarr;cantidad</li>
+                <li><code>statistics</code> &mdash; Statistics</li>
+                <li><code>GameState.new(name)</code> &mdash; crea inicial</li>
+              </ul>
+            </div>
+          </div>
+          <div style="margin-top:14px;">
+            <pre style="font-size:.78rem;"><span class="dec">@dataclass</span>  <span class="cmt"># genera __init__, __repr__, __eq__ automaticamente</span>
+<span class="kw">class</span> <span class="cls">PlacedItem</span>:
+    item_id: str
+    remaining_seconds: <span class="num">int</span> = <span class="num">0</span>
+    ready: <span class="num">bool</span> = <span class="kw">False</span>
+    condition: Optional[str] = <span class="kw">None</span>   <span class="cmt"># None | "plaga" | "enfermedad"</span>
+    dead: <span class="num">bool</span> = <span class="kw">False</span>
+
+    <span class="kw">def</span> <span class="fn">to_dict</span>(<span class="kw">self</span>) -&gt; dict:
+        <span class="kw">return</span> {<span class="str">"item_id"</span>: <span class="kw">self</span>.item_id, <span class="str">"remaining_seconds"</span>: <span class="kw">self</span>.remaining_seconds, ...}
+
+    <span class="dec">@classmethod</span>
+    <span class="kw">def</span> <span class="fn">from_dict</span>(<span class="kw">cls</span>, data: dict) -&gt; <span class="str">"PlacedItem"</span>:
+        <span class="kw">return</span> <span class="kw">cls</span>(item_id=data[<span class="str">"item_id"</span>], remaining_seconds=data.get(<span class="str">"remaining_seconds"</span>, <span class="num">0</span>), ...)</pre>
+          </div>
+        </div>
+
+        <!-- SLIDE 6: PERSISTENCIA -->
+        <div class="slide">
+          <span class="slide-tag tag-green">Persistencia</span>
+          <div class="slide-title">Guardar y Cargar en JSON</div>
+          <div class="slide-subtitle">Las tres funciones de persistencia y su flujo</div>
+          <div class="cols-2" style="align-items:start;">
+            <div>
+              <div class="card" style="margin-bottom:14px;">
+                <div class="card-title"><span class="icon">&#128190;</span> Las 3 funciones</div>
+                <table>
+                  <tr><th>Funcion</th><th>Que hace</th></tr>
+                  <tr><td>save_game(state)</td><td>Serializa GameState.to_dict() y escribe JSON en disco</td></tr>
+                  <tr><td>load_game()</td><td>Lee el archivo y reconstruye GameState con from_dict(). Retorna None si no existe</td></tr>
+                  <tr><td>delete_save()</td><td>Borra el archivo permanentemente (para nueva partida)</td></tr>
+                </table>
+              </div>
+              <div class="card">
+                <div class="card-title"><span class="icon">&#9201;&#65039;</span> Cuando se guarda</div>
+                <ul>
+                  <li>Cada <strong style="color:var(--accent)">30 segundos</strong> automaticamente (_ui_loop)</li>
+                  <li>Al hacer clic en <strong style="color:var(--accent)">boton Guardar</strong></li>
+                  <li>Al <strong style="color:var(--accent)">cerrar la ventana</strong> del juego (on_close)</li>
+                  <li>Al crear una <strong style="color:var(--accent)">partida nueva</strong> (estado inicial)</li>
+                </ul>
+              </div>
+            </div>
+            <div>
+              <pre><span class="kw">def</span> <span class="fn">save_game</span>(state: <span class="cls">GameState</span>) -&gt; <span class="kw">None</span>:
+    <span class="cmt"># mkdir crea la carpeta "data/" si no existe</span>
+    SAVE_FILE.parent.<span class="fn">mkdir</span>(parents=<span class="kw">True</span>, exist_ok=<span class="kw">True</span>)
+    <span class="kw">with</span> SAVE_FILE.<span class="fn">open</span>(<span class="str">"w"</span>, encoding=<span class="str">"utf-8"</span>) <span class="kw">as</span> fp:
+        json.<span class="fn">dump</span>(state.<span class="fn">to_dict</span>(), fp, ensure_ascii=<span class="kw">False</span>, indent=<span class="num">2</span>)
+
+<span class="kw">def</span> <span class="fn">load_game</span>() -&gt; Optional[<span class="cls">GameState</span>]:
+    <span class="kw">if not</span> SAVE_FILE.<span class="fn">exists</span>():
+        <span class="kw">return None</span>  <span class="cmt"># sin archivo &rarr; None</span>
+    <span class="kw">with</span> SAVE_FILE.<span class="fn">open</span>(<span class="str">"r"</span>, encoding=<span class="str">"utf-8"</span>) <span class="kw">as</span> fp:
+        data = json.<span class="fn">load</span>(fp)
+    <span class="kw">return</span> <span class="cls">GameState</span>.<span class="fn">from_dict</span>(data)
+
+<span class="kw">def</span> <span class="fn">delete_save</span>() -&gt; <span class="kw">None</span>:
+    <span class="kw">if</span> SAVE_FILE.<span class="fn">exists</span>():
+        SAVE_FILE.<span class="fn">unlink</span>()  <span class="cmt"># elimina el archivo</span></pre>
+              <div class="highlight">
+                <strong>Patron to_dict / from_dict:</strong> cada clase sabe como convertirse
+                a dict (para JSON) y como reconstruirse desde dict (al cargar).
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 7: HILOS -->
+        <div class="slide">
+          <span class="slide-tag tag-red">&#9733; Tema de Examen</span>
+          <div class="slide-title">Concurrencia con threading</div>
+          <div class="slide-subtitle">ProductionThread &mdash; un hilo por cada item productivo activo</div>
+          <div class="cols-2" style="align-items:start;">
+            <div>
+              <div class="card" style="margin-bottom:14px;">
+                <div class="card-title"><span class="icon">&#128256;</span> ProductionThread</div>
+                <ul>
+                  <li><strong style="color:var(--accent3)">daemon=True</strong> &rarr; muere cuando cierra el programa</li>
+                  <li><strong style="color:var(--accent3)">stop_event</strong> (threading.Event) &rarr; senal de parada cooperativa</li>
+                  <li><strong style="color:var(--accent3)">run()</strong> &rarr; bucle: sleep(1) &rarr; tick_item()</li>
+                  <li><strong style="color:var(--accent3)">stop()</strong> &rarr; llama stop_event.set()</li>
+                </ul>
+              </div>
+              <div class="card">
+                <div class="card-title"><span class="icon">&#128274;</span> RLock &mdash; seguridad de hilos</div>
+                <p>El motor usa <code>threading.RLock()</code> para proteger el estado compartido.</p>
+                <ul style="margin-top:8px;">
+                  <li><strong>Lock normal:</strong> bloquea incluso para el mismo hilo</li>
+                  <li><strong>RLock (reentrant):</strong> el mismo hilo puede adquirirlo varias veces sin bloquearse</li>
+                </ul>
+              </div>
+              <div class="warn-box">
+                <strong>Condicion de carrera:</strong> sin lock, dos hilos podrian leer y modificar
+                <code>state.coins</code> al mismo tiempo &rarr; resultado incorrecto.
+              </div>
+            </div>
+            <div>
+              <pre><span class="kw">class</span> <span class="cls">ProductionThread</span>(threading.Thread):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, engine, item_id):
+        <span class="fn">super()</span>.<span class="fn">__init__</span>(daemon=<span class="kw">True</span>)  <span class="cmt"># muere con el programa</span>
+        <span class="kw">self</span>.engine = engine
+        <span class="kw">self</span>.item_id = item_id
+        <span class="kw">self</span>.stop_event = threading.<span class="fn">Event</span>()
+
+    <span class="kw">def</span> <span class="fn">run</span>(<span class="kw">self</span>):
+        <span class="kw">while not self</span>.stop_event.<span class="fn">is_set</span>() <span class="kw">and self</span>.engine.running:
+            time.<span class="fn">sleep</span>(<span class="num">1</span>)               <span class="cmt"># tick cada 1 segundo</span>
+            <span class="kw">if self</span>.stop_event.<span class="fn">is_set</span>(): <span class="kw">break</span>
+            <span class="kw">self</span>.engine.<span class="fn">tick_item</span>(<span class="kw">self</span>.item_id)
+
+    <span class="kw">def</span> <span class="fn">stop</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>.stop_event.<span class="fn">set</span>()  <span class="cmt"># senal de parada (no fuerza)</span>
+
+<span class="cmt"># En el motor, cada write esta protegido:</span>
+<span class="kw">def</span> <span class="fn">tick_item</span>(<span class="kw">self</span>, item_id):
+    <span class="kw">with self</span>.lock:              <span class="cmt"># adquiere el RLock</span>
+        item = <span class="kw">self</span>.state.items.<span class="fn">get</span>(item_id)
+        ...                      <span class="cmt"># modifica estado de forma segura</span></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 8: MAQUINA DE ESTADOS -->
+        <div class="slide">
+          <span class="slide-tag tag-amber">&#9733; Mas complejo del proyecto</span>
+          <div class="slide-title">Maquina de Estados: tick_item()</div>
+          <div class="slide-subtitle">Llamado cada segundo por cada hilo &mdash; gobierna todo el ciclo de vida</div>
+          <div class="states" style="margin-bottom:18px;">
+            <div class="state-box s-prod">
+              <strong>&#128260; Produciendo</strong>
+              remaining_seconds &ndash; 1 por tick.<br>0.3% chance de contraer condicion.
+            </div>
+            <div class="state-box s-sick">
+              <strong>&#129440; Con condicion</strong>
+              condition_remaining &ndash; 1 por tick.<br>Si llega a 0 &rarr; muere.
+            </div>
+            <div class="state-box s-ready">
+              <strong>&#9989; Listo</strong>
+              ready = True.<br>Si auto_harvest &rarr; cosecha.<br>Si no &rarr; gracia 90s.
+            </div>
+            <div class="state-box s-dead">
+              <strong>&#128128; Muerto</strong>
+              dead = True.<br>Hilo ignora el item.<br>Se puede limpiar.
+            </div>
+          </div>
+          <pre style="font-size:.77rem;"><span class="kw">def</span> <span class="fn">tick_item</span>(<span class="kw">self</span>, item_id):
+    <span class="kw">with self</span>.lock:
+        item = <span class="kw">self</span>.state.items.<span class="fn">get</span>(item_id)
+        <span class="kw">if not</span> item <span class="kw">or</span> item.dead: <span class="kw">return</span>               <span class="cmt"># guard</span>
+
+        <span class="cmt"># 1) Tiene plaga/enfermedad?</span>
+        <span class="kw">if</span> item.condition:
+            item.condition_remaining -= <span class="num">1</span>
+            <span class="kw">if</span> item.condition_remaining &lt;= <span class="num">0</span>: item.dead = <span class="kw">True</span>
+            <span class="kw">return</span>
+
+        <span class="cmt"># 2) Ocurre plaga este tick? (0.3% de probabilidad)</span>
+        <span class="kw">if</span> random.<span class="fn">random</span>() &lt; <span class="num">0.003</span>:
+            item.condition = <span class="str">"plaga"</span>; item.condition_remaining = <span class="num">90</span>; <span class="kw">return</span>
+
+        <span class="cmt"># 3) Conteo normal de produccion</span>
+        <span class="kw">if</span> definition.is_productive <span class="kw">and not</span> item.ready:
+            item.remaining_seconds -= <span class="num">1</span>
+            <span class="kw">if</span> item.remaining_seconds &lt;= <span class="num">0</span>: item.ready = <span class="kw">True</span>; <span class="kw">return</span>
+
+        <span class="cmt"># 4) Listo &rarr; cosechar o contar gracia</span>
+        <span class="kw">if</span> item.ready <span class="kw">and</span> <span class="kw">self</span>.state.auto_harvest:
+            <span class="kw">self</span>.<span class="fn">harvest</span>(item, automatic=<span class="kw">True</span>)
+        <span class="kw">elif</span> item.ready:
+            item.ready_wait_seconds += <span class="num">1</span>
+            <span class="kw">if</span> item.ready_wait_seconds &gt;= <span class="num">90</span>:  <span class="cmt"># se perdio</span>
+                item.ready = <span class="kw">False</span>; item.remaining_seconds = definition.production_time</pre>
+        </div>
+
+        <!-- SLIDE 9: GAMEENGINE METODOS -->
+        <div class="slide">
+          <span class="slide-tag tag-blue">Motor del Juego</span>
+          <div class="slide-title">GameEngine &mdash; Metodos Principales</div>
+          <div class="slide-subtitle">El nucleo que contiene todas las reglas &mdash; la UI solo llama estos metodos</div>
+          <table>
+            <tr><th>Metodo</th><th>Parametros clave</th><th>Que hace</th><th>Devuelve</th></tr>
+            <tr><td>buy_product(key)</td><td>product_key: str</td><td>Valida monedas, descuenta, agrega al inventario, registra estadisticas</td><td>Tuple[bool, str]</td></tr>
+            <tr><td>place_item()</td><td>key, terrain, row, col, from_inventory</td><td>Valida posicion libre &rarr; descuenta inventario &rarr; crea PlacedItem &rarr; lanza hilo</td><td>Tuple[bool, str]</td></tr>
+            <tr><td>harvest(item, automatic)</td><td>item: PlacedItem, automatic: bool</td><td>Punto unico de cosecha: suma monedas, actualiza stats, reinicia o elimina item</td><td>Tuple[bool, str]</td></tr>
+            <tr><td>cure_item(terrain, row, col)</td><td>indices de posicion</td><td>Usa polimorfismo para saber que consumible necesita; lo descuenta del inventario</td><td>Tuple[bool, str]</td></tr>
+            <tr><td>tick_item(item_id)</td><td>item_id: str</td><td>&#9733; Maquina de estados: avanza temporizador, aplica plagas, maneja readiness</td><td>None</td></tr>
+            <tr><td>buy_terrain()</td><td>&mdash;</td><td>Descuenta 20 000 monedas y agrega nuevo Terrain a la lista</td><td>Tuple[bool, str]</td></tr>
+            <tr><td>collect_ready_items()</td><td>&mdash;</td><td>Itera todos los items listos y llama harvest() en cada uno (modo auto)</td><td>int (cosechados)</td></tr>
+            <tr><td>stop_all_threads()</td><td>&mdash;</td><td>Pone running=False, llama stop() en cada ProductionThread &rarr; cierre limpio</td><td>None</td></tr>
+          </table>
+          <div class="highlight" style="margin-top:14px;">
+            <strong>Patron Early Return:</strong> <code>place_item()</code> verifica condiciones invalidas al inicio
+            y retorna inmediatamente con error antes de modificar el estado. Evita estados inconsistentes.
+          </div>
+        </div>
+
+        <!-- SLIDE 10: UI -->
+        <div class="slide">
+          <span class="slide-tag tag-green">Interfaz Grafica</span>
+          <div class="slide-title">Clases de UI &mdash; Tkinter</div>
+          <div class="slide-subtitle">Estructura de ventanas y como se comunican con el motor</div>
+          <div class="cols-2" style="align-items:start;">
+            <div>
+              <div class="card" style="margin-bottom:12px;">
+                <div class="card-title"><span class="icon">&#128193;</span> FarmApp (controlador raiz)</div>
+                <ul><li>Crea la ventana principal (tk.Tk)</li><li>Gestiona transicion Menu &harr; Juego</li><li>Metodos: <code>new_game</code>, <code>continue_game</code>, <code>start_game</code>, <code>on_game_closed</code>, <code>close_app</code></li></ul>
+              </div>
+              <div class="card" style="margin-bottom:12px;">
+                <div class="card-title"><span class="icon">&#127807;</span> MenuView (tk.Frame)</div>
+                <ul><li>Imagen de fondo con Pillow (resize dinamico)</li><li>Panel con botones de navegacion</li><li><code>_on_resize</code> &rarr; reescala fondo al cambiar tamano de ventana</li></ul>
+              </div>
+              <div class="card">
+                <div class="card-title"><span class="icon">&#127918;</span> GameView (tk.Toplevel)</div>
+                <ul><li>Cuadricula 10&times;10 de botones (tk.Button)</li><li>Toolbar con acciones sobre celdas</li><li>Panel de bitacora (tk.Text, solo lectura)</li><li><strong>_ui_loop():</strong> after(1000) &rarr; actualiza cada segundo</li><li><strong>refresh_ui():</strong> refleja el estado en todos los widgets</li></ul>
+              </div>
+            </div>
+            <div>
+              <pre style="margin-bottom:12px;"><span class="cmt"># after() &mdash; bucle de UI sin bloquear la ventana</span>
+<span class="kw">def</span> <span class="fn">_ui_loop</span>(<span class="kw">self</span>):
+    <span class="kw">self</span>.state.statistics.total_play_seconds += <span class="num">1</span>
+    <span class="kw">self</span>.<span class="fn">refresh_ui</span>()                   <span class="cmt"># actualiza widgets</span>
+    <span class="kw">if self</span>.state.statistics.total_play_seconds % <span class="num">30</span> == <span class="num">0</span>:
+        <span class="fn">save_game</span>(<span class="kw">self</span>.state)             <span class="cmt"># autoguardado 30s</span>
+    <span class="kw">if self</span>.engine.running:
+        <span class="kw">self</span>.<span class="fn">after</span>(<span class="num">1000</span>, <span class="kw">self</span>._ui_loop)  <span class="cmt"># reprograma</span></pre>
+              <pre style="margin-bottom:12px;"><span class="cmt"># on_cell_click &mdash; manejo de estado pendiente</span>
+<span class="kw">def</span> <span class="fn">on_cell_click</span>(<span class="kw">self</span>, row, col):
+    <span class="kw">if self</span>.pending_shop_item:           <span class="cmt"># hay algo por colocar</span>
+        ok, msg = <span class="kw">self</span>.engine.<span class="fn">place_item</span>(...)
+        <span class="kw">if</span> ok: <span class="kw">self</span>.<span class="fn">clear_pending</span>()
+        <span class="kw">return</span>
+    <span class="kw">self</span>.<span class="fn">refresh_selected_info</span>()        <span class="cmt"># solo ver info</span></pre>
+              <div class="warn-box">
+                <strong>Regla de Tkinter:</strong> todos los widgets deben crearse y modificarse
+                desde el hilo principal. Los ProductionThreads solo modifican el
+                <code>GameState</code> (datos); la UI los lee en el siguiente tick de <code>_ui_loop</code>.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 11: REPASO FINAL -->
+        <div class="slide">
+          <span class="slide-tag tag-amber">Repaso Final</span>
+          <div class="slide-title">Preguntas Tipicas de Examen</div>
+          <div class="slide-subtitle">Respuestas directas a lo que mas se pregunta</div>
+          <div class="cols-2" style="align-items:start;">
+            <div>
+              <div class="card" style="margin-bottom:14px;">
+                <div class="card-title"><span class="icon">&#10067;</span> POO</div>
+                <ul>
+                  <li><strong>Donde esta el polimorfismo?</strong><br>En <code>required_cure()</code>: misma llamada, distinto resultado segun subclase.</li>
+                  <li><strong>Que es el Factory Method?</strong><br><code>create_entity()</code>: centraliza la creacion; el motor no usa if/else para saber que clase crear.</li>
+                  <li><strong>Por que separar GameEngine de la UI?</strong><br>Logica independiente de la interfaz: mas facil probar, mantener y cambiar la vista.</li>
+                </ul>
+              </div>
+              <div class="card">
+                <div class="card-title"><span class="icon">&#10067;</span> Hilos y concurrencia</div>
+                <ul>
+                  <li><strong>Por que se usa lock?</strong><br>Evita condiciones de carrera: dos hilos no pueden modificar el estado simultaneamente.</li>
+                  <li><strong>Que es daemon=True?</strong><br>El hilo muere automaticamente cuando el proceso principal termina.</li>
+                  <li><strong>Por que after() en vez de sleep()?</strong><br>sleep() congela la ventana; after() programa sin bloquear el hilo de Tkinter.</li>
+                </ul>
+              </div>
+            </div>
+            <div>
+              <div class="card" style="margin-bottom:14px;">
+                <div class="card-title"><span class="icon">&#10067;</span> Persistencia y estructura</div>
+                <ul>
+                  <li><strong>Que datos se guardan?</strong><br>Todo el GameState: jugador, monedas, terrenos, items, inventario, estadisticas, bitacora.</li>
+                  <li><strong>Como funciona la serializacion?</strong><br>Cada clase tiene <code>to_dict()</code> para guardar y <code>from_dict()</code> para reconstruirse.</li>
+                  <li><strong>Donde esta el autoguardado?</strong><br>En <code>_ui_loop()</code>: cada 30 ticks llama <code>save_game()</code>.</li>
+                </ul>
+              </div>
+              <div class="card">
+                <div class="card-title"><span class="icon">&#128202;</span> Flujo completo de produccion</div>
+                <div class="flow" style="flex-wrap:nowrap;gap:4px;margin-top:6px;">
+                  <div class="flow-step"><strong>Comprar</strong>Tienda &rarr; inventario</div>
+                  <div class="flow-arrow">&rarr;</div>
+                  <div class="flow-step"><strong>Colocar</strong>Celda libre &rarr; hilo lanzado</div>
+                  <div class="flow-arrow">&rarr;</div>
+                  <div class="flow-step"><strong>Producir</strong>tick cada 1s</div>
+                  <div class="flow-arrow">&rarr;</div>
+                  <div class="flow-step"><strong>Listo</strong>ready=True</div>
+                  <div class="flow-arrow">&rarr;</div>
+                  <div class="flow-step"><strong>Cosechar</strong>+monedas, reinicio</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /slides-container -->
+    </div><!-- /slide-viewport -->
+  </div><!-- /ppt-body -->
+</div><!-- /ppt-shell -->
+
+<script>
+  const slideInfo = [
+    {label:"Portada"},
+    {label:"Librerias importadas"},
+    {label:"Arquitectura general"},
+    {label:"Herencia + Polimorfismo"},
+    {label:"Dataclasses - Modelos"},
+    {label:"Persistencia JSON"},
+    {label:"Concurrencia (Threading)"},
+    {label:"Maquina de estados"},
+    {label:"GameEngine - Metodos"},
+    {label:"Interfaz Grafica (UI)"},
+    {label:"Preguntas de Examen"},
+  ];
+  let current = 0;
+  const total = slideInfo.length;
+  const container = document.getElementById("slides");
+  const counter   = document.getElementById("slide-counter");
+  const progress  = document.getElementById("progress");
+  const btnPrev   = document.getElementById("btn-prev");
+  const btnNext   = document.getElementById("btn-next");
+  const idxList   = document.getElementById("idx-list");
+  const sidebar   = document.getElementById("sidebar");
+
+  slideInfo.forEach((s,i)=>{
+    const el = document.createElement("div");
+    el.className = "idx-item"+(i===0?" active":"");
+    el.innerHTML = `<span class="idx-num">${String(i+1).padStart(2,"0")}</span><span class="idx-label">${s.label}</span>`;
+    el.onclick = ()=>goTo(i);
+    idxList.appendChild(el);
+  });
+
+  function goTo(n){
+    current = Math.max(0,Math.min(total-1,n));
+    container.style.transform = `translateX(-${current*100}%)`;
+    counter.textContent = `${current+1} / ${total}`;
+    progress.style.width = `${((current+1)/total)*100}%`;
+    btnPrev.disabled = current===0;
+    btnNext.disabled = current===total-1;
+    document.querySelectorAll(".idx-item").forEach((el,i)=>el.classList.toggle("active",i===current));
+    const slides = document.querySelectorAll(".slide");
+    if(slides[current]) slides[current].scrollTop=0;
+  }
+  function goSlide(dir){goTo(current+dir);}
+  function toggleSidebar(){sidebar.classList.toggle("hidden");}
+  document.addEventListener("keydown",e=>{
+    if(e.key==="ArrowRight"||e.key==="PageDown") goSlide(1);
+    if(e.key==="ArrowLeft" ||e.key==="PageUp")   goSlide(-1);
+  });
+  goTo(0);
+</script>
+</body>
+</html>

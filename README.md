@@ -15,7 +15,7 @@ Juego tipo FarmVille en Python + Tkinter con:
 
 ## Ejecutar
 
-1. Instalar dependencias:
+1. Instalar dependencias (sin entorno virtual obligatorio):
 
 ```bash
 pip install -r requirements.txt
@@ -29,7 +29,15 @@ python main.py
 
 ## Notas
 
-- Si falta `tkVideoPlayer`, el menu se muestra con fondo verde fijo.
+- No es obligatorio usar entorno virtual para correr este proyecto.
 - Si faltan imagenes, el juego usa etiquetas de texto en cada celda.
 - El tiempo solo corre con la app abierta.
 - La partida se guarda en `data/savegame.json`.
+
+## Estructura del codigo (modular)
+
+- `main.py`: punto de entrada de la aplicacion.
+- `farmville/domain.py`: constantes, catalogo, entidades y dataclasses del estado.
+- `farmville/persistence.py`: guardado/carga/eliminacion de partida en JSON.
+- `farmville/engine.py`: reglas de negocio y temporizadores por item.
+- `farmville/ui.py`: ventanas y flujo de interfaz Tkinter.

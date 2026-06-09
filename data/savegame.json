@@ -1,12 +1,12 @@
 {
   "player_name": "Chris",
-  "coins": 140,
+  "coins": 120,
   "terrains": [
     {
       "index": 0,
       "grid": [
         [
-          null,
+          "7431679a-fbdc-4845-ab05-5bf42814feee",
           null,
           null,
           null,
@@ -129,7 +129,22 @@
     }
   ],
   "current_terrain_index": 0,
-  "items": {},
+  "items": {
+    "7431679a-fbdc-4845-ab05-5bf42814feee": {
+      "item_id": "7431679a-fbdc-4845-ab05-5bf42814feee",
+      "product_key": "trigo",
+      "terrain_index": 0,
+      "row": 0,
+      "col": 0,
+      "animal_name": "",
+      "remaining_seconds": 0,
+      "ready": true,
+      "ready_wait_seconds": 67,
+      "condition": null,
+      "condition_remaining": 0,
+      "dead": false
+    }
+  },
   "inventory": {
     "pesticida": 0,
     "medicina": 0,
@@ -139,16 +154,16 @@
   "auto_harvest": false,
   "statistics": {
     "total_generated": 95,
-    "total_products_bought": 2,
+    "total_products_bought": 3,
     "products_bought_by_type": {
-      "trigo": 1,
+      "trigo": 2,
       "maiz": 1
     },
     "products_gain_by_type": {
       "trigo": 35,
       "maiz": 60
     },
-    "total_play_seconds": 171
+    "total_play_seconds": 286
   },
   "log_entries": [
     "Partida nueva creada.",
@@ -159,6 +174,9 @@
     "[11:15:30] Trigo esta listo para recolectar.",
     "[11:15:39] Cosecha manual de Trigo: +35 monedas.",
     "[11:15:46] Maiz esta listo para recolectar.",
-    "[11:16:32] Cosecha manual de Maiz: +60 monedas."
+    "[11:16:32] Cosecha manual de Maiz: +60 monedas.",
+    "[10:03:41] Compraste Trigo. Se agrego al inventario.",
+    "[10:03:51] Colocado: Trigo en terreno 1, fila 1, columna 1.",
+    "[10:04:21] Trigo esta listo para recolectar."
   ]
 }
