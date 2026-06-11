@@ -105,8 +105,8 @@ PRODUCTS: Dict[str, "ProductDefinition"] = {
 
 # Consumibles: no se colocan en celdas, se aplican directamente a items enfermos
 CONSUMABLES = {
-    "pesticida": {"name": "Pesticida", "price": 80,  "image": "pesticida.png"},  # Para plantas y árboles
-    "medicina":  {"name": "Medicina",  "price": 120, "image": "medicina.png"},   # Para animales
+    "pesticida": {"name": "Pesticida", "price": 40,  "image": "pesticida.png"},  # Para plantas y árboles
+    "medicina":  {"name": "Medicina",  "price": 60, "image": "medicina.png"},   # Para animales
 }
 
 
@@ -699,7 +699,7 @@ class GameEngine:
                 return
 
             # ESTADO: produciendo → 0.3% de probabilidad de contraer condición
-            if definition.is_productive and not item.ready and random.random() < 0.003:
+            if definition.is_productive and not item.ready and random.random() < 0.0015:
                 cure = entity.required_cure()
                 if cure:
                     item.condition = "plaga" if cure == "pesticida" else "enfermedad"
@@ -824,18 +824,18 @@ class MenuView(tk.Frame):
                 self.logo_img = ImageTk.PhotoImage(img)
                 tk.Label(content, image=self.logo_img, bg="#f5f5f5").pack(pady=(0, 8))
             except Exception:
-                tk.Label(content, text="JossFarm SiembraTEC", font=("Segoe UI", 28, "bold"),
+                tk.Label(content, text="JossFarm SiembraTEC", font=("Comic Sans MS", 28, "bold"),
                          fg=heading_color, bg="#f5f5f5").pack(pady=(10, 22))
         else:
-            tk.Label(content, text="JossFarm SiembraTEC", font=("Segoe UI", 28, "bold"),
+            tk.Label(content, text="JossFarm SiembraTEC", font=("Comic Sans MS", 28, "bold"),
                      fg=heading_color, bg="#f5f5f5").pack(pady=(10, 22))
 
         tk.Label(content, text="Bienvenida a tu granja virtual",
-                 font=("Segoe UI", 16, "bold"), fg=heading_color, bg="#f5f5f5").pack(pady=(0, 4))
+                 font=("Comic Sans MS", 16, "bold"), fg=heading_color, bg="#f5f5f5").pack(pady=(0, 4))
         tk.Label(content, text="Administra cultivos y animales, produce recursos\ny expande tus terrenos.",
-                 font=("Segoe UI", 10), fg=heading_color, bg="#f5f5f5", justify="center").pack(pady=(0, 10))
+                 font=("Comic Sans MS", 10), fg=heading_color, bg="#f5f5f5", justify="center").pack(pady=(0, 10))
 
-        style = {"font": ("Segoe UI", 15, "bold"), "fg": "#ffffff", "bg": "#447428",
+        style = {"font": ("Comic Sans MS", 15, "bold"), "fg": "#ffffff", "bg": "#447428",
                  "activebackground": "#365d20", "activeforeground": "#ffffff", "bd": 0,
                  "cursor": "hand2", "relief": "flat", "width": 17, "padx": 6, "pady": 6}
 
@@ -845,9 +845,9 @@ class MenuView(tk.Frame):
         tk.Button(content, text="Salir",              command=self.app.close_app,       **style).pack(pady=3)
 
         tk.Label(footer, text="Hecho por Joselyn Melissa Hidalgo Torres",
-                 font=("Segoe UI", 9), fg=heading_color, bg="#f5f5f5").pack()
+                 font=("Comic Sans MS", 9), fg=heading_color, bg="#f5f5f5").pack()
         tk.Label(footer, text="Version 1.0.0",
-                 font=("Segoe UI", 9), fg=heading_color, bg="#f5f5f5").pack(pady=(2, 0))
+                 font=("Comic Sans MS", 9), fg=heading_color, bg="#f5f5f5").pack(pady=(2, 0))
 
 
 class ShopWindow(tk.Toplevel):
@@ -902,7 +902,7 @@ class ShopWindow(tk.Toplevel):
             self.parent.refresh_ui()
             messagebox.showinfo("Tienda", msg, parent=self)
 
-        tk.Button(self, text="Comprar seleccionado", font=("Segoe UI", 12, "bold"),
+        tk.Button(self, text="Comprar seleccionado", font=("Comic Sans MS", 12, "bold"),
                   bg="#3c9b2c", fg="white", bd=0, command=buy_selected).pack(pady=(0, 12))
 
 
@@ -919,8 +919,8 @@ class InventoryWindow(tk.Toplevel):
         self._build()
 
     def _build(self) -> None:
-        tk.Label(self, text="Inventario actual", font=("Segoe UI", 18, "bold"), bg="#eef5e8").pack(pady=8)
-        self.listbox = tk.Listbox(self, font=("Consolas", 12), height=14)
+        tk.Label(self, text="Inventario actual", font=("Comic Sans MS", 18, "bold"), bg="#eef5e8").pack(pady=8)
+        self.listbox = tk.Listbox(self, font=("Comic Sans MS", 12), height=14)
         self.listbox.pack(fill="both", expand=True, padx=12, pady=10)
 
         self.entries: List[Tuple[str, int]] = []
@@ -956,7 +956,7 @@ class InventoryWindow(tk.Toplevel):
             self.destroy()
 
         place_button = tk.Button(self, text="Colocar item seleccionado",
-            font=("Segoe UI", 12, "bold"), bg="#3c9b2c", fg="white", bd=0,
+            font=("Comic Sans MS", 12, "bold"), bg="#3c9b2c", fg="white", bd=0,
             command=place_from_inventory)
         place_button.pack(pady=10)
 
@@ -978,18 +978,18 @@ class StatsWindow(tk.Toplevel):
         frame = tk.Frame(self, bg="#eef5e8")
         frame.pack(fill="both", expand=True, padx=14, pady=12)
 
-        tk.Label(frame, text="Resumen de partida", font=("Segoe UI", 20, "bold"), bg="#eef5e8").pack(anchor="w")
-        tk.Label(frame, text=f"Jugador: {state.player_name}", bg="#eef5e8", font=("Segoe UI", 12)).pack(anchor="w")
-        tk.Label(frame, text=f"Monedas actuales: {state.coins}", bg="#eef5e8", font=("Segoe UI", 12)).pack(anchor="w")
-        tk.Label(frame, text=f"Terrenos comprados: {len(state.terrains)}", bg="#eef5e8", font=("Segoe UI", 12)).pack(anchor="w")
+        tk.Label(frame, text="Resumen de partida", font=("Comic Sans MS", 20, "bold"), bg="#eef5e8").pack(anchor="w")
+        tk.Label(frame, text=f"Jugador: {state.player_name}", bg="#eef5e8", font=("Comic Sans MS", 12)).pack(anchor="w")
+        tk.Label(frame, text=f"Monedas actuales: {state.coins}", bg="#eef5e8", font=("Comic Sans MS", 12)).pack(anchor="w")
+        tk.Label(frame, text=f"Terrenos comprados: {len(state.terrains)}", bg="#eef5e8", font=("Comic Sans MS", 12)).pack(anchor="w")
         tk.Label(frame, text=f"Tiempo jugado: {format_seconds(stats.total_play_seconds)}",
-                 bg="#eef5e8", font=("Segoe UI", 12)).pack(anchor="w")
-        tk.Label(frame, text=f"Monedas generadas: {stats.total_generated}", bg="#eef5e8", font=("Segoe UI", 12)).pack(anchor="w")
+                 bg="#eef5e8", font=("Comic Sans MS", 12)).pack(anchor="w")
+        tk.Label(frame, text=f"Monedas generadas: {stats.total_generated}", bg="#eef5e8", font=("Comic Sans MS", 12)).pack(anchor="w")
         tk.Label(frame, text=f"Total de compras realizadas: {stats.total_products_bought}",
-                 bg="#eef5e8", font=("Segoe UI", 12)).pack(anchor="w")
+                 bg="#eef5e8", font=("Comic Sans MS", 12)).pack(anchor="w")
 
-        tk.Label(frame, text="Compras por producto:", font=("Segoe UI", 12, "bold"), bg="#eef5e8").pack(anchor="w", pady=(10, 2))
-        buy_box = tk.Text(frame, height=8, width=72, font=("Consolas", 10))
+        tk.Label(frame, text="Compras por producto:", font=("Comic Sans MS", 12, "bold"), bg="#eef5e8").pack(anchor="w", pady=(10, 2))
+        buy_box = tk.Text(frame, height=8, width=72, font=("Comic Sans MS", 10))
         buy_box.pack(fill="x")
         if not stats.products_bought_by_type:
             buy_box.insert("end", "Sin compras registradas.\n")
@@ -999,8 +999,8 @@ class StatsWindow(tk.Toplevel):
                 buy_box.insert("end", f"- {name}: {count}\n")
         buy_box.config(state="disabled")
 
-        tk.Label(frame, text="Ganancias por producto:", font=("Segoe UI", 12, "bold"), bg="#eef5e8").pack(anchor="w", pady=(10, 2))
-        gain_box = tk.Text(frame, height=8, width=72, font=("Consolas", 10))
+        tk.Label(frame, text="Ganancias por producto:", font=("Comic Sans MS", 12, "bold"), bg="#eef5e8").pack(anchor="w", pady=(10, 2))
+        gain_box = tk.Text(frame, height=8, width=72, font=("Comic Sans MS", 10))
         gain_box.pack(fill="x")
         if not stats.products_gain_by_type:
             gain_box.insert("end", "Sin ganancias registradas.\n")
@@ -1057,8 +1057,8 @@ class GameView(tk.Toplevel):
         """Construye la estructura visual: barra superior, toolbar, grilla y panel de log."""
         top = tk.Frame(self, bg="#e7f4df")
         top.pack(fill="x", padx=8, pady=6)
-        tk.Label(top, textvariable=self.info_var,    font=("Segoe UI", 11, "bold"), bg="#e7f4df").pack(side="left",  padx=8)
-        tk.Label(top, textvariable=self.pending_var, font=("Segoe UI", 11),         bg="#e7f4df").pack(side="right", padx=8)
+        tk.Label(top, textvariable=self.info_var,    font=("Comic Sans MS", 11, "bold"), bg="#e7f4df").pack(side="left",  padx=8)
+        tk.Label(top, textvariable=self.pending_var, font=("Comic Sans MS", 11),         bg="#e7f4df").pack(side="right", padx=8)
 
         toolbar = tk.Frame(self, bg="#dcefd1")
         toolbar.pack(fill="x", padx=8, pady=(0, 6))
@@ -1069,7 +1069,7 @@ class GameView(tk.Toplevel):
 
         def btn(parent: tk.Widget, text: str, cmd: Callable[[], None], bg: str = "#2f8f2f") -> None:
             """Función local auxiliar para crear botones de toolbar con estilo uniforme."""
-            tk.Button(parent, text=text, command=cmd, font=("Segoe UI", 10, "bold"),
+            tk.Button(parent, text=text, command=cmd, font=("Comic Sans MS", 10, "bold"),
                       bg=bg, fg="white", activebackground="#256f25", bd=0,
                       padx=10, pady=6, cursor="hand2").pack(side="left", padx=3)
 
@@ -1089,7 +1089,7 @@ class GameView(tk.Toplevel):
 
         self.auto_var = tk.BooleanVar(value=self.state.auto_harvest)
         tk.Checkbutton(row_bottom, text="Auto recoleccion", variable=self.auto_var,
-                       command=self.toggle_auto_harvest, font=("Segoe UI", 10, "bold"),
+                       command=self.toggle_auto_harvest, font=("Comic Sans MS", 10, "bold"),
                        bg="#dcefd1").pack(side="left", padx=14)
 
         body = tk.Frame(self, bg="#dcefd1")
@@ -1118,13 +1118,13 @@ class GameView(tk.Toplevel):
 
         bottom = tk.Frame(left, bg="#dcefd1")
         bottom.pack(fill="x", pady=6)
-        tk.Label(bottom, textvariable=self.selected_var, bg="#dcefd1", font=("Consolas", 11)).pack(anchor="w")
+        tk.Label(bottom, textvariable=self.selected_var, bg="#dcefd1", font=("Comic Sans MS", 11)).pack(anchor="w")
 
         right = tk.Frame(body, bg="#edf7e6", width=360)
         right.pack(side="right", fill="y", padx=(8, 0))
-        tk.Label(right, text="Bitacora", bg="#edf7e6", font=("Segoe UI", 14, "bold")).pack(anchor="w", padx=8, pady=6)
+        tk.Label(right, text="Bitacora", bg="#edf7e6", font=("Comic Sans MS", 14, "bold")).pack(anchor="w", padx=8, pady=6)
 
-        self.log_text = tk.Text(right, height=34, width=44, font=("Consolas", 10))
+        self.log_text = tk.Text(right, height=34, width=44, font=("Comic Sans MS", 10))
         self.log_text.pack(fill="both", expand=True, padx=8, pady=(0, 8))
         self.log_text.insert("end", "\n".join(self.state.log_entries[-80:]) + "\n")
         self.log_text.config(state="disabled")
@@ -1137,14 +1137,14 @@ class GameView(tk.Toplevel):
             path = IMAGES_DIR / definition.image_file
             if path.exists():
                 try:
-                    img = Image.open(path).resize((62, 62))
+                    img = Image.open(path).resize((70, 50))
                     self.photo_cache[key] = ImageTk.PhotoImage(img)
                 except Exception:
                     pass
         dead_path = IMAGES_DIR / "muerto.png"
         if dead_path.exists():
             try:
-                img = Image.open(dead_path).resize((62, 62))
+                img = Image.open(dead_path).resize((70, 50))
                 self.photo_cache["__dead__"] = ImageTk.PhotoImage(img)
             except Exception:
                 pass
@@ -1379,10 +1379,12 @@ class GameView(tk.Toplevel):
 
                 if has_image:
                     btn.config(image=self.photo_cache[image_key], compound="top",
-                               text=tail, bg="#fffadf" if item.ready else "#f6fff1", fg="#243924")
+                               text=tail, font=("Comic Sans MS", 9, "bold"),
+                               bg="#fffadf" if item.ready else "#f6fff1", fg="#243924")
                 else:
                     txt = f"{caption}\n{tail}" if tail else caption
-                    btn.config(text=txt, image="", bg="#fffadf" if item.ready else "#f6fff1", fg="#243924")
+                    btn.config(text=txt, image="", font=("Comic Sans MS", 9),
+                               bg="#fffadf" if item.ready else "#f6fff1", fg="#243924")
 
         self.refresh_selected_info()
 
@@ -1502,4 +1504,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
 

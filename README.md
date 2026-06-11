@@ -5,13 +5,14 @@ Juego tipo FarmVille en Python + Tkinter con:
 - Terrenos 10x10 (matriz)
 - Tienda de productos
 - Produccion con hilos (1 hilo por elemento productivo)
-- Plagas/enfermedades aleatorias
+- Plagas/enfermedades aleatorias (0.15% de probabilidad por segundo)
 - Inventario (incluye retirar del tablero)
 - Auto-recoleccion opcional
 - Navegacion entre terrenos
 - Persistencia JSON
 - Bitacora de eventos
 - Estadisticas por producto
+- Fuente Comic Sans MS en toda la interfaz
 
 ## Ejecutar
 
@@ -33,11 +34,8 @@ python main.py
 - Si faltan imagenes, el juego usa etiquetas de texto en cada celda.
 - El tiempo solo corre con la app abierta.
 - La partida se guarda en `data/savegame.json`.
+- Los consumibles (Pesticida y Medicina) cuestan 40 y 60 monedas respectivamente.
 
-## Estructura del codigo (modular)
+## Estructura del codigo
 
-- `main.py`: punto de entrada de la aplicacion.
-- `farmville/domain.py`: constantes, catalogo, entidades y dataclasses del estado.
-- `farmville/persistence.py`: guardado/carga/eliminacion de partida en JSON.
-- `farmville/engine.py`: reglas de negocio y temporizadores por item.
-- `farmville/ui.py`: ventanas y flujo de interfaz Tkinter.
+- `main.py`: punto de entrada de la aplicacion. Contiene todo el codigo del juego en un solo archivo (constantes, modelos, motor, UI).
