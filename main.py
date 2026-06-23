@@ -913,33 +913,18 @@ class InventoryWindow(tk.Toplevel):
         super().__init__(parent)
         self.parent = parent
         self.title("Inventario")
-        self.geometry("520x430")
+        self.geometry("520x400")
         self.configure(bg="#eef5e8")
         self.resizable(False, False)
         self._build()
 
     def _build(self) -> None:
-        tk.Label(self, text="Inventario actual", font=("Comic Sans MS", 18, "bold"), bg="#eef5e8").pack(pady=8)
-        self.listbox = tk.Listbox(self, font=("Comic Sans MS", 12), height=14)
-        self.listbox.pack(fill="both", expand=True, padx=12, pady=10)
+        # Título
+        tk.Label(self, text="Inventario actual", font=("Comic Sans MS", 18, "bold"),
+                 bg="#eef5e8").pack(pady=(10, 4))
 
+        # Elementos inferiores fijos (se colocan primero para garantizar visibilidad)
         self.entries: List[Tuple[str, int]] = []
-        for key, count in sorted(self.parent.engine.state.inventory.items()):
-            if count > 0:
-                label = key
-                if key in PRODUCTS:
-                    label = PRODUCTS[key].name
-                elif key in CONSUMABLES:
-                    label = CONSUMABLES[key]["name"]
-                self.entries.append((key, count))
-                self.listbox.insert("end", f"{label:<22} x {count}")
-
-        if not self.entries:
-            self.listbox.insert("end", "Inventario vacio.")
-            self.listbox.insert("end", "Compra en la tienda o retira elementos del terreno.")
-
-        tk.Label(self, text="Para consumibles usa el boton Curar sobre una celda afectada.",
-                 bg="#eef5e8").pack(pady=6)
 
         def place_from_inventory() -> None:
             idx = self.listbox.curselection()
@@ -958,9 +943,28 @@ class InventoryWindow(tk.Toplevel):
         place_button = tk.Button(self, text="Colocar item seleccionado",
             font=("Comic Sans MS", 12, "bold"), bg="#3c9b2c", fg="white", bd=0,
             command=place_from_inventory)
-        place_button.pack(pady=10)
+        place_button.pack(side="bottom", pady=(6, 12))
+
+        tk.Label(self, text="Para consumibles usa el boton Curar sobre una celda afectada.",
+                 bg="#eef5e8").pack(side="bottom", pady=(0, 4))
+
+        # Listbox ocupa el espacio restante
+        self.listbox = tk.Listbox(self, font=("Comic Sans MS", 12), height=10)
+        self.listbox.pack(fill="both", expand=True, padx=12, pady=(4, 6))
+
+        for key, count in sorted(self.parent.engine.state.inventory.items()):
+            if count > 0:
+                label = key
+                if key in PRODUCTS:
+                    label = PRODUCTS[key].name
+                elif key in CONSUMABLES:
+                    label = CONSUMABLES[key]["name"]
+                self.entries.append((key, count))
+                self.listbox.insert("end", f"{label:<22} x {count}")
 
         if not self.entries:
+            self.listbox.insert("end", "Inventario vacio.")
+            self.listbox.insert("end", "Compra en la tienda o retira elementos del terreno.")
             place_button.config(state="disabled", bg="#91b88a", fg="#eef5e8")
 
 
@@ -1099,14 +1103,14 @@ class GameView(tk.Toplevel):
         left.pack(side="left", fill="both", expand=True)
 
         # Cuadrícula de botones 10x10 (cada celda = un tk.Button)
-        grid_frame = tk.Frame(left, bg="#98c787", bd=2, relief="ridge")
+        grid_frame = tk.Frame(left, bg="#4a8c2a", bd=2, relief="ridge")
         grid_frame.pack(fill="both", expand=True)
 
         for r in range(GRID_SIZE):
             row_buttons = []
             for c in range(GRID_SIZE):
                 # lambda con valores por defecto evita el problema de closure en bucles
-                b = tk.Button(grid_frame, text="", width=10, height=4, bg="#f6fff1",
+                b = tk.Button(grid_frame, text="", width=10, height=4, bg="#6ab04c",
                               relief="groove", command=lambda rr=r, cc=c: self.on_cell_click(rr, cc))
                 b.grid(row=r, column=c, sticky="nsew", padx=1, pady=1)
                 row_buttons.append(b)
@@ -1349,12 +1353,12 @@ class GameView(tk.Toplevel):
                 btn = self.cell_buttons[r][c]
                 item_id = terrain.grid[r][c]
                 if not item_id:
-                    btn.config(text="", image="", bg="#f6fff1", fg="#244d24")
+                    btn.config(text="", image="", bg="#6ab04c", fg="#1a3a0a")
                     continue
 
                 item = self.state.items.get(item_id)
                 if not item:
-                    btn.config(text="", image="", bg="#f6fff1", fg="#244d24")
+                    btn.config(text="", image="", bg="#6ab04c", fg="#1a3a0a")
                     continue
 
                 definition = PRODUCTS[item.product_key]
@@ -1380,11 +1384,11 @@ class GameView(tk.Toplevel):
                 if has_image:
                     btn.config(image=self.photo_cache[image_key], compound="top",
                                text=tail, font=("Comic Sans MS", 9, "bold"),
-                               bg="#fffadf" if item.ready else "#f6fff1", fg="#243924")
+                               bg="#fffadf" if item.ready else "#6ab04c", fg="#1a3a0a")
                 else:
                     txt = f"{caption}\n{tail}" if tail else caption
                     btn.config(text=txt, image="", font=("Comic Sans MS", 9),
-                               bg="#fffadf" if item.ready else "#f6fff1", fg="#243924")
+                               bg="#fffadf" if item.ready else "#6ab04c", fg="#1a3a0a")
 
         self.refresh_selected_info()
 

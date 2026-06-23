@@ -1,6 +1,6 @@
 {
   "player_name": "Chris",
-  "coins": 20,
+  "coins": 50,
   "terrains": [
     {
       "index": 0,
@@ -140,20 +140,20 @@
   },
   "auto_harvest": true,
   "statistics": {
-    "total_generated": 510,
-    "total_products_bought": 10,
+    "total_generated": 580,
+    "total_products_bought": 12,
     "products_bought_by_type": {
-      "trigo": 6,
+      "trigo": 8,
       "maiz": 2,
       "gallina": 1,
       "pato": 1
     },
     "products_gain_by_type": {
-      "trigo": 140,
+      "trigo": 210,
       "maiz": 120,
       "gallina": 250
     },
-    "total_play_seconds": 1568
+    "total_play_seconds": 1932
   },
   "log_entries": [
     "Partida nueva creada.",
@@ -202,6 +202,14 @@
     "[14:48:03] Colocado: Pato (cuak) en terreno 1, fila 1, columna 1.",
     "[14:48:54] Pato tiene enfermedad. Aplica medicina en 90s o morira.",
     "[14:50:24] Pato murio por no aplicar cura a tiempo.",
-    "[14:50:28] Celda limpiada manualmente."
+    "[14:50:28] Celda limpiada manualmente.",
+    "[11:29:37] Compraste Trigo. Se agrego al inventario.",
+    "[11:29:40] Colocado: Trigo en terreno 1, fila 1, columna 1.",
+    "[11:30:10] Trigo esta listo para recolectar.",
+    "[11:30:10] Cosecha automatica de Trigo: +35 monedas.",
+    "[16:32:07] Compraste Trigo. Se agrego al inventario.",
+    "[16:32:10] Colocado: Trigo en terreno 1, fila 1, columna 1.",
+    "[16:32:40] Trigo esta listo para recolectar.",
+    "[16:32:40] Cosecha automatica de Trigo: +35 monedas."
   ]
 }
